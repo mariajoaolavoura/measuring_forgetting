@@ -1,0 +1,57 @@
+experiment:
+  # NEW PROPERTY
+  evaluate_seen_items: True
+
+  gpu: 1 
+  dataset: sampled_movielens_b0_h0
+  align_side_with_train: False
+  data_config:
+    strategy: fixed # assumes that our data has been previously split into training/validation/test sets or training/test sets.
+    train_path: /home/kpfra/streamRec-forgetting/elliot_experiments/elliot_movielens/datasets/movielens_b0.csv
+    # validation_path: this/is/the/path.tsv # optional
+    test_path: /home/kpfra/streamRec-forgetting/elliot_experiments/elliot_movielens/datasets/movielens_h0.csv
+
+  # Output config:
+  path_output_rec_result: /home/kpfra/streamRec-forgetting/elliot_experiments/elliot_movielens/multivae/MultiVae_Movielens_results_b0_h0/recs # lets the user define the path to the folder to store the recommendation lists.
+  path_output_rec_weight: /home/kpfra/streamRec-forgetting/elliot_experiments/elliot_movielens/multivae/MultiVae_Movielens_results_b0_h0/weights #  lets the user define the path to the folder to store the model weights.
+  path_output_rec_performance: /home/kpfra/streamRec-forgetting/elliot_experiments/elliot_movielens/multivae/MultiVae_Movielens_results_b0_h0/performance # lets the user define the path to the folder to store the evaluation results.
+  path_log_folder: /home/kpfra/streamRec-forgetting/elliot_experiments/elliot_movielens/multivae/MultiVae_Movielens_results_b0_h0/logs # lets the user define the path to the folder to store the logs.
+
+  # Evaluation:
+  # All the evaluation results are available in the performance folder at the end of the experiment
+  top_k: 20
+  evaluation:
+    # cutoffs: [10, 5] # if not passed, top_k value is assumed as a cut-off
+    simple_metrics: [nDCG, Precision, Recall]
+    # paired_ttest: True
+    # wilcoxon_test: True
+  models: # https://elliot.readthedocs.io/en/latest/guide/recommenders.html
+    MultiVAE: 
+      meta:
+        verbose: False
+        save_recs: False
+        save_weights: True
+        validation_metric: Recall@20
+        validation_rate: 1
+        hyper_opt_alg: tpe
+        # hyper_max_evals: 50
+        hyper_max_evals: 5
+      epochs: [randint, 1, 20]
+      batch_size: [randint, 100, 1000]
+      intermediate_dim: [randint, 100, 1000]
+      latent_dim: [randint, 100, 500]
+      mf_factors: [randint, 1, 50]
+      reg_lambda: [loguniform, -7, 0]
+      lr: [loguniform, -7, 0]
+      dropout_pkeep: [uniform, 0, 1]
+      # early_stopping: # https://elliot.readthedocs.io/en/latest/guide/early_stopping.html
+      #   patience: 25 # int
+      #   monitor: Recall@20
+      #   mode: auto
+      #   verbose: False
+      #   min_delta: 0.001 # float absolute variation
+      #   rel_delta: 0.1 # float (ratio)
+      #   baseline: 0.1 # float absolute value
+
+
+

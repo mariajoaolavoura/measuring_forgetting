@@ -1,0 +1,66 @@
+# https://elliot.readthedocs.io/en/latest/guide/config.html
+experiment:
+  # config_test: True # For testing the config file - Not working???
+  gpu: 1 
+  # https://towardsdatascience.com/how-to-finally-install-tensorflow-gpu-on-wsl2-7be59e278f92
+  # https://medium.com/@stephengregory_69986/installing-cuda-10-1-on-ubuntu-20-04-e562a5e724a0
+  # https://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/index.html
+  # https://docs.nvidia.com/cuda/wsl-user-guide/index.html
+  # https://www.tensorflow.org/install/source_windows
+  # https://ubuntu.com/tutorials/enabling-gpu-acceleration-on-ubuntu-on-wsl2-with-the-nvidia-cuda-platform#1-overview
+  # https://developer.nvidia.com/rdp/cudnn-archive
+  dataset: sampled_movielens_b0_h0
+  data_config:
+    strategy: fixed # assumes that our data has been previously split into training/validation/test sets or training/test sets.
+    train_path: /home/kpfra/streamRec-forgetting/elliot_experiments/elliot_example/datasets/movielens_b0.csv
+    # validation_path: this/is/the/path.tsv # optional
+    test_path: /home/kpfra/streamRec-forgetting/elliot_experiments/elliot_example/datasets/movielens_h0.csv
+  # binarize: True
+  # align_side_with_train: False
+  # prefiltering:
+  # splitting:
+
+  # Output config:
+  # If not provided, Elliot creates a results folder in the parent folder of the config file location.
+  # Elliot creates a log/ folder in the parent folder of the config file location.
+  path_output_rec_result: /home/kpfra/streamRec-forgetting/elliot_experiments/elliot_example/MultiVae_Movielens_results_b0_h0/recs # lets the user define the path to the folder to store the recommendation lists.
+  path_output_rec_weight: /home/kpfra/streamRec-forgetting/elliot_experiments/elliot_example/MultiVae_Movielens_results_b0_h0/weights #  lets the user define the path to the folder to store the model weights.
+  path_output_rec_performance: /home/kpfra/streamRec-forgetting/elliot_experiments/elliot_example/MultiVae_Movielens_results_b0_h0/performance # lets the user define the path to the folder to store the evaluation results.
+  path_log_folder: /home/kpfra/streamRec-forgetting/elliot_experiments/elliot_example/MultiVae_Movielens_results_b0_h0/logs # lets the user define the path to the folder to store the logs.
+
+  # Evaluation:
+  # All the evaluation results are available in the performance folder at the end of the experiment
+  top_k: 20
+  evaluation:
+    # cutoffs: [10, 5] # if not passed, top_k value is assumed as a cut-off
+    simple_metrics: [nDCG, Precision, Recall]
+    # paired_ttest: True
+    # wilcoxon_test: True
+  models: # https://elliot.readthedocs.io/en/latest/guide/recommenders.html
+    MultiVAE: 
+      meta:
+        verbose: False
+        save_recs: False
+        save_weights: True
+        validation_metric: Recall@20
+        validation_rate: 1
+        hyper_opt_alg: tpe
+        hyper_max_evals: 10
+      epochs: [randint, 1, 20]
+      batch_size: [randint, 10, 50]
+      intermediate_dim: [randint, 25, 300]
+      latent_dim: [randint, 25, 150]
+      reg_lambda: [loguniform, -7, 0]
+      lr: [loguniform, -7, 0]
+      dropout_pkeep: [uniform, 0, 1]
+      # early_stopping: # https://elliot.readthedocs.io/en/latest/guide/early_stopping.html
+      #   patience: 3 # int
+      #   monitor: Recall@20
+      #   mode: auto
+      #   verbose: False
+      #   min_delta: 0.001 # float absolute variation
+      #   rel_delta: 0.1 # float (ratio)
+      #   baseline: 0.1 # float absolute value
+
+
+

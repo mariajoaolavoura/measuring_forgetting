@@ -1,0 +1,3 @@
+This folder contains results from previous experiments.
+The holdouts done for these experiments contained randomly chosen user interactions, using a uniform distribution with probability of 0.1.
+The holdouts in new experiments contain only frequent users' last interactions in each bucket. Moreover, new buckets are also based on time intervals.
