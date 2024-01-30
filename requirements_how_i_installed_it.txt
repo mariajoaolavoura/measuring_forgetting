@@ -48,3 +48,9 @@ looking for, navigate to
 conda activate measuring_forgetting
 
 pip install -r requirements_pip.txt
+
+pip install pandas==1.1.5
+pip install numba==0.56.4
+pip install joblib==1.2.0 
+pip install seaborn==0.12.2
+pip install flurs
