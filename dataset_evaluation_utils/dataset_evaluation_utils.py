@@ -110,15 +110,22 @@ def get_interactions_info(data, user_col, quarter_info=False, semester_info=Fals
     user_presence_df.reset_index(drop=True, inplace=True)
     # building DF with counts of quarter and semester interactions
     if quarter_info and semester_info:
-        user_trimestre_interactions = pd.DataFrame( user_trimestre_interactions ).T
-        user_semestre_interactions = pd.DataFrame( user_semestre_interactions ).T
+        user_trimestre_interactions = pd.DataFrame( user_trimestre_interactions ).T#.reset_index()
+        user_semestre_interactions = pd.DataFrame( user_semestre_interactions ).T#.reset_index()
+
+        #user_trimestre_interactions.columns = user_month_interactions.columns
+        #user_semestre_interactions.columns = user_month_interactions.columns
+
         return user_presence_df, user_month_interactions, trimestres, user_trimestre_interactions, semestres, user_semestre_interactions
+    
     elif quarter_info:
         user_trimestre_interactions = pd.DataFrame( user_trimestre_interactions ).T
         return user_presence_df, user_month_interactions, trimestres, user_trimestre_interactions
+    
     elif semester_info:
         user_semestre_interactions = pd.DataFrame( user_semestre_interactions ).T
         return user_presence_df, user_month_interactions, semestres, user_semestre_interactions
+    
     else:
         return user_presence_df, user_month_interactions
 
@@ -143,12 +150,14 @@ def plot_user_presence_distribution(user_presence_df, dataset_name):
     user_presence_df is the output of the function 'get_interactions_info'
     dataset_name: used to store the image in the folder images. path: 'images/user_bucket_analysis/{dataset_name}_user_presence_distribution.png'
     '''
-    fig, ax = plt.subplots(1,3, figsize=(17,4))
-    user_presence_df['month_%'].plot(kind='hist', ax=ax[0], title='user month presence')
-    if 'trimestre_%' in user_presence_df.columns:
-        user_presence_df['trimestre_%'].plot(kind='hist', ax=ax[1], title='user quarter presence')    
-    if 'semestre_%' in user_presence_df.columns:
-        user_presence_df['semestre_%'].plot(kind='hist', ax=ax[2], title='user semester presence')    
+    # fig, ax = plt.subplots(3,1, figsize=(17,4))
+    # user_presence_df['month_%'].plot(kind='hist', ax=ax[0], title='user month presence')
+    # if 'trimestre_%' in user_presence_df.columns:
+    #     user_presence_df['trimestre_%'].plot(kind='hist', ax=ax[1], title='user quarter presence')    
+    # if 'semestre_%' in user_presence_df.columns:
+    #     user_presence_df['semestre_%'].plot(kind='hist', ax=ax[2], title='user semester presence')   
+    
+    user_presence_df.plot(kind='hist', subplots=True, title='user presence') 
     plt.suptitle(f'{dataset_name}: User presence distribution')
     plt.savefig(f'images/user_bucket_analysis/{dataset_name}_user_presence_distribution.png');
 
