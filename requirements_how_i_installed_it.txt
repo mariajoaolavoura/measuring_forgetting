@@ -54,3 +54,7 @@ pip install numba==0.56.4
 pip install joblib==1.2.0 
 pip install seaborn==0.12.2
 pip install flurs
+
+#error with heatmap printing all anotations
+pip uninstall matplotlib
+pip install matplotlib==3.5.3
