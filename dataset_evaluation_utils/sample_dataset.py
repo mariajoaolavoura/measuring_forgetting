@@ -23,7 +23,7 @@ def filter_out_users_with_less_than_k_rates(df, user_col='user_id', k=5):
     k_core_users = data[user_col].value_counts()[ data[user_col].value_counts() >= k ].index
     return data.set_index(user_col).loc[k_core_users].reset_index()
 
-def filter_out_users_with_less_than_k_rates_per_period(df, user_col='user_id', k=5, period='year-month'):
+def filter_out_users_with_less_than_k_rates_per_period(df, user_col='user_id', k=5, period='month'):
     '''
         df: pandas DataFrame,
         user_col: str = 'user_id',
@@ -46,9 +46,9 @@ def filter_out_users_with_less_than_k_rates_per_period(df, user_col='user_id', k
 
 def split_timestamp(df, time_col='timestamp'):
     '''
-        df: pandas DataFrame
+        df: pandas DataFrame, requires a timestamp column
 
-        returns a new dataframe
+        returns a new dataframe with year-month, year, month and day columns
     '''
     data = df.copy()
 
@@ -62,15 +62,80 @@ def split_timestamp(df, time_col='timestamp'):
     return data
 
 
-def sample_time_period(time_period, df, user_col='user_id', time_col='year-month'):
-    time_period_start = time_period[0][0]
-    time_period_end = time_period[1][0]
+def sample_time_period(time_period, df, col='user_id', time_col='year-month', period='month'):
+    '''
+        time_period: list of tupples, start and end time with the respective time format compatible with the time_col refered
+                     for example [('2013-01', '%Y-%m'), ('2017-01', '%Y-%m')]
+                     or ['2013-01', '2017-01']
 
-    y_filter = (df[time_col] >= datetime.strptime(*time_period[0])) & \
-            (df[time_col] < datetime.strptime(*time_period[1]))
+        df: pandas DataFrame, requires a time column      
+
+        col: str, 'user_id' or 'item_id'
+        
+        plots the Count of users per period
+
+        returns the dataframe filtered by the given time period, 
+                the str of start period,
+                the str of end period
+    '''
+
+
+    if len(time_period)!=2:
+        print('Wrong time_period shape!')
+        return None
+
+    # time_period shape of ['2013-01', '2017-01']
+    if len(time_period[0]) != 2:
+        
+        time_period_start = time_period[0]
+        time_period_end = time_period[1]
+
+        time_period, dt_start, dt_end = get_time_period_and_datetime(time_period_start,
+                                                                     time_period_end,
+                                                                     period)
+        y_filter = (df[time_col] >= dt_start) & \
+                    (df[time_col] < dt_end)
     
-    df[y_filter][[user_col, time_col]]\
-        .groupby([time_col]).count()\
-            .plot(title='Count of users per month '+time_period_start+' to '+time_period_end);
+    # time_period shape of [('2013-01', '%Y-%m'), ('2017-01', '%Y-%m')]
+    else:
+        time_period_start = time_period[0][0]
+        time_period_end = time_period[1][0]
+        
+        y_filter = (df[time_col] >= datetime.strptime(*time_period[0])) & \
+                (df[time_col] < datetime.strptime(*time_period[1]))
+        
+    
+    if col == 'user_id':
+        df[y_filter][[col, time_col]]\
+            .drop_duplicates()\
+            .groupby([time_col]).count()\
+                .plot(title='Count of different users per '+period+' '+time_period_start+' to '+time_period_end);
+    else:
+        df[y_filter][[col, time_col]]\
+            .groupby([time_col]).count()\
+                .plot(title='Count of interactions per '+period+' '+time_period_start+' to '+time_period_end);
 
-    return df[y_filter], time_period_start, time_period_end
+    return df[y_filter], time_period, time_period_start, time_period_end
+
+
+
+def get_time_period_and_datetime(start, end, period='month'):
+    '''
+        start: str, 
+        end: str
+        period: str [day, month, trimestre, semestre, year]
+
+        returns list of tuples start and end time with the respective time format ex: [('2013-01', '%Y-%m'), ('2017-01', '%Y-%m')], 
+                datetime of start,
+                datetime of end
+    '''
+
+    if period == 'month':
+        time_period = [(start, '%Y-%m'), (end, '%Y-%m')]
+        return time_period, datetime.strptime(*time_period[0]), datetime.strptime(*time_period[1])
+    else:
+        print('not implemented yet!')
+        return None
+
+
+    
