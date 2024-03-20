@@ -23,6 +23,7 @@ def filter_out_users_with_less_than_k_rates(df, user_col='user_id', k=5):
     k_core_users = data[user_col].value_counts()[ data[user_col].value_counts() >= k ].index
     return data.set_index(user_col).loc[k_core_users].reset_index()
 
+
 def filter_out_users_with_less_than_k_rates_per_period(df, user_col='user_id', k=5, period='month'):
     '''
         df: pandas DataFrame,
@@ -40,7 +41,6 @@ def filter_out_users_with_less_than_k_rates_per_period(df, user_col='user_id', k
     k_core_users = user_interactions_per_period[ user_interactions_per_period[user_inter_col] >= k ].index
     
     return user_interactions_per_period.set_index(user_col).loc[k_core_users].reset_index()
-
 
 
 
@@ -139,3 +139,17 @@ def get_time_period_and_datetime(start, end, period='month'):
 
 
     
+# def plot_users_per_month(data, user_col='user_id', time_col='year-month'):
+#     '''
+#         Plot users per month
+#         Data: interactions dataset. must have a user_col and time_col column.
+#     '''
+#     data[[user_col, time_col]]\
+#     .drop_duplicates()\
+#         .groupby(time_col)\
+#             .count().plot(title='how many different users per month');
+
+# def plot_interactions_per_month(data, item_col='item_id', time_col='year-month'):
+#     data[[item_col, time_col]]\
+#         .groupby(time_col)\
+#             .count().plot(title='how many interactions per month');

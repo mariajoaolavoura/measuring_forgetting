@@ -58,3 +58,6 @@ pip install flurs
 #error with heatmap printing all annotations
 pip uninstall matplotlib
 pip install matplotlib==3.5.3
+
+#reading MSD
+pip install tables
