@@ -5,8 +5,8 @@ results/
 test*.py
 temp/
 *.csv
-notebooks/output/amazonbooks_dump/
-notebooks/output/amazonkindle_dump/
+notebooks/output/
+klismam_work/
 results_b0_h0
 results_b0_h1
 *_results_*

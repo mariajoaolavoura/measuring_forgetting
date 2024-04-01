@@ -1,34 +1,10 @@
 
-def get_namepaths_AmazonDigitalMusic_ISGD(sample_year_month,
-                                        interval_type,
-                                        dump_filename,
-                                        use_data_unique_users,
-                                        to_grid_search,
-                                        num_factors,
-                                        num_iter,
-                                        learn_rate,
-                                        regularization,
-                                        random_seed):
-    
-    return _get_namepaths(data_name = '_amazon_digitalmusic',
-                          data_print_name = 'Amazon Digital Music',
-                          sample_year_month = sample_year_month,
-                          interval_type = interval_type,
-                          dump_filename = dump_filename,
-                          use_data_unique_users = use_data_unique_users,
-                          to_grid_search = to_grid_search,
-                          num_factors = num_factors,
-                          num_iter = num_iter,
-                          learn_rate = learn_rate,
-                          regularization = regularization,
-                          random_seed = random_seed,
-                          model_print_name = 'ISGD')
-
-
 def get_namepaths_Palco2010_ISGD(sample_year_month,
                                         interval_type,
                                         dump_filename,
                                         use_data_unique_users,
+                                        frequent_users_thr,
+                                        cold_start_buckets,
                                         to_grid_search,
                                         num_factors,
                                         num_iter,
@@ -36,11 +12,13 @@ def get_namepaths_Palco2010_ISGD(sample_year_month,
                                         regularization,
                                         random_seed):
     
-    return _get_namepaths(data_name = '_palco2010',
+    return get_namepaths(data_name = '_palco2010',
                           data_print_name = 'Palco2010',
                           sample_year_month = sample_year_month,
                           interval_type = interval_type,
                           dump_filename = dump_filename,
+                          frequent_users_thr = frequent_users_thr,
+                          cold_start_buckets = cold_start_buckets,
                           use_data_unique_users = use_data_unique_users,
                           to_grid_search = to_grid_search,
                           num_factors = num_factors,
@@ -51,12 +29,14 @@ def get_namepaths_Palco2010_ISGD(sample_year_month,
                           model_print_name = 'ISGD')
 
 
-def _get_namepaths(data_name,
+def get_namepaths(data_name,
                    data_print_name,
                    sample_year_month,
                    interval_type,
                    dump_filename,
                    use_data_unique_users,
+                   frequent_users_thr,
+                   cold_start_buckets,
                    to_grid_search,
                    num_factors,
                    num_iter,
@@ -67,8 +47,13 @@ def _get_namepaths(data_name,
     
     sample_year_month_start = sample_year_month[0][0]
     sample_year_month_end = sample_year_month[1][0]
-    sample_str = str(sample_year_month_start)+'_until_'+str(sample_year_month_end)
 
+    if cold_start_buckets:
+        sample_str = str(sample_year_month_start)+'_until_'+str(sample_year_month_end)+'+cold_start'
+    else:
+        sample_str = str(sample_year_month_start)+'_until_'+str(sample_year_month_end)
+
+    
 
     dataset_name = 'sample_'+sample_str+data_name
     user_col = 'user_id'
@@ -78,7 +63,12 @@ def _get_namepaths(data_name,
 
     data_path = output_path+''+dataset_name+'.csv'
 
-    frequent_users_path = output_path+'sample_'+sample_str+'_frequent_users.joblib' 
+    if frequent_users_thr:
+        frequent_users_path = output_path+'sample_'+sample_str+'_frequent_users_'+str(frequent_users_thr)+'.joblib' 
+        sample_str += '_fu_'+str(frequent_users_thr)
+
+    else:    
+        frequent_users_path = output_path+'sample_'+sample_str+'_frequent_users.joblib' 
 
 
     if interval_type == 'Q':
@@ -112,6 +102,7 @@ def _get_namepaths(data_name,
             'data_path': data_path,
             'use_data_unique_users': use_data_unique_users,
             'frequent_users_path':frequent_users_path,
+            'cold_start_buckets':cold_start_buckets,
             'to_grid_search':to_grid_search,
             'num_factors': num_factors,
             'num_iter': num_iter,
