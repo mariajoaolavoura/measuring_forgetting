@@ -75,6 +75,7 @@ class EvalHoldout:
             # Recommend
             start_recommend = time.time()
             reclist = self.model.Recommend(user = uid, n = self.N_recommendations, exclude_known_items = exclude_known_items, default_user=self.default_user)
+            # print('@EvalHoldout.Evaluate(), reclist:\n',reclist)
             end_recommend = time.time()
             results['time_recommend'].append(end_recommend - start_recommend)
             # EvalPoint

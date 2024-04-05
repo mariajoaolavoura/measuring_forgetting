@@ -37,9 +37,22 @@ def getBucketsHoldouts(data:pd.DataFrame, user_col:str, item_col:str, frequent_u
         for s, e in intervals:
             idx = (data['date'] >= s) & (data['date'] <= e)
             buckets.append( data[idx] )
-        else:
-            idx = (data['date'] > e)
+
+            # debug
+            # print(str(s)+' to '+str(e)+'\n'+\
+            #       str(data.loc[idx, 'date'].min()) + ' to ' +str(data.loc[idx, 'date'].max())+\
+            #       '\nn interactions: '+str(data[idx].shape[0]))
+            
+        # i dont understand the reason why the following else-case is here (is not even paired with an if-case) 
+        # and is creating an empty bucket...
+        # else:
+        #     idx = (data['date'] > e)
+        #     buckets.append( data[idx] )
+        # replaced with the following if-case code
+        idx = (data['date'] > e)
+        if data[idx].shape[0] > 0:
             buckets.append( data[idx] )
+            
     else:
         # create buckets based on fixed number of examples
         for i, j in intervals:
@@ -55,6 +68,10 @@ def getBucketsHoldouts(data:pd.DataFrame, user_col:str, item_col:str, frequent_u
     frequent_users_seen = [] # frequent users must have been seen at least once before being sent to holdouts. 
     # Imagine if the first frequent user interaction is the single interaction by this user in an interval, then this single interaction cant be sent to the holdout.
     for i, b in enumerate( buckets ):
+        
+        # debug
+        # print('bucket '+str(i)+' - '+str(b['date'].min())+' to '+str(b['date'].max())+'\nstarting n interactions: '+str(len(buckets[i])))
+
         if i >= cold_start_buckets:
             last_interaction_idx = []
             for u in frequent_users:
@@ -75,11 +92,16 @@ def getBucketsHoldouts(data:pd.DataFrame, user_col:str, item_col:str, frequent_u
 #             b = pd.concat( holdouts )[[user_col, item_col]].set_index([user_col, item_col])
 #             print('2', a.reset_index().shape[0] + b.reset_index().shape[0] )
         else: # if bucket belongs to 'cold_start_buckets'
+            # debug
+            print('cold start bucket')
+            
             buckets[i] = b.reset_index(drop=True)
             for u in frequent_users: # as before, we mark frequent users in the cold start bucket as seen
                 idx = b[user_col] == u
                 if (idx.sum() > 0):
                     frequent_users_seen.append(u)
+        # debug
+        # print('ending n interactions: '+str(len(buckets[i])))
     
     print('Cleaning holdouts. . .')
     # a verification is required to remove any items in the holdouts from the buckets

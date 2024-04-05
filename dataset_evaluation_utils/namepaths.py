@@ -29,11 +29,11 @@ def get_namepaths_Palco2010_ISGD(sample_year_month,
                           model_print_name = 'ISGD')
 
 
-def get_namepaths(data_name,
-                   data_print_name,
+def get_namepaths(data_name:str,
+                   data_print_name:str,
                    sample_year_month,
-                   interval_type,
-                   dump_filename,
+                   interval_type:str,
+                   dump_filename:str,
                    use_data_unique_users,
                    frequent_users_thr,
                    cold_start_buckets,

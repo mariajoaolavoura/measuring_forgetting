@@ -6,6 +6,7 @@ test*.py
 temp/
 *.csv
 notebooks/output/
+notebooks/images/
 klismam_work/
 results_b0_h0
 results_b0_h1
