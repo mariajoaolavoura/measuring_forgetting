@@ -5,6 +5,8 @@ from recommenders_implicit import *
 import time
 # import random
 
+import joblib
+
 class EvalHoldout:
     # TODO: Documentation
 
@@ -58,7 +60,7 @@ class EvalHoldout:
 #         results['time_recommend'] = time_recommend
 #         results['time_eval_point'] = time_eval_point
 
-#         return results
+#         return results   
 
     def Evaluate(self, exclude_known_items: bool = True ):
         results = {'time_get_tuple':[], 'time_recommend': [], 'time_eval_point': []}
@@ -86,6 +88,46 @@ class EvalHoldout:
                 results['time_eval_point'].append(end_eval_point - start_eval_point)
 #             else:
 #                 print(uid, 'user not seen')
+        return results
+    
+    
+    def Evaluate_Save(self, bucket_number:int, holdout_number:int, filepath:str, exclude_known_items:bool=True):
+        results = {'time_get_tuple':[], 'time_recommend': [], 'time_eval_point': []}
+
+        rec_lists = []
+
+        for metric in self.metrics:
+            results[metric] = []
+
+        for i in range(self.holdout.size):
+            # GetTuple
+            start_get_tuple = time.time()
+            uid, iid = self.holdout.GetTuple(i) # get external IDs
+            end_get_tuple = time.time()
+            results['time_get_tuple'].append(end_get_tuple - start_get_tuple)
+            # Recommend
+            start_recommend = time.time()
+            reclist = self.model.Recommend(user = uid, n = self.N_recommendations, exclude_known_items = exclude_known_items, default_user=self.default_user)
+            
+            end_recommend = time.time()
+            results['time_recommend'].append(end_recommend - start_recommend)
+            
+            # this is the difference
+            rec_lists += [reclist]
+
+            # EvalPoint
+            if len(reclist): # if user has been seen by model, add result
+                start_eval_point = time.time()
+                results[metric].append(self.__EvalPoint(iid, reclist))
+                end_eval_point = time.time()
+                results['time_eval_point'].append(end_eval_point - start_eval_point)
+#             else:
+#                 print(uid, 'user not seen')
+                
+        # this is the difference
+        joblib.dump(rec_lists, 
+                    filepath+'rec_lists_b'+str(bucket_number)+'_h'+str(holdout_number)+'.joblib')  
+        
         return results
 
     def __EvalPoint(self, item_id, reclist):
