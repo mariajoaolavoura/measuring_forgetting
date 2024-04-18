@@ -1,32 +1,63 @@
+import os
 
-def get_namepaths_Palco2010_ISGD(sample_year_month,
-                                        interval_type,
-                                        dump_filename,
-                                        use_data_unique_users,
-                                        frequent_users_thr,
-                                        cold_start_buckets,
-                                        to_grid_search,
-                                        num_factors,
-                                        num_iter,
-                                        learn_rate,
-                                        regularization,
-                                        random_seed):
+
+def get_folderpaths(dump_foldername:str, sample_foldername:str=''):
+    '''
+        creates output and image filepaths following the rule: 
+            what <image or output>/which_data_set/sample/ what <diversity_eval or heatmaps or other>/
+    '''
     
-    return get_namepaths(data_name = '_palco2010',
-                          data_print_name = 'Palco2010',
-                          sample_year_month = sample_year_month,
-                          interval_type = interval_type,
-                          dump_filename = dump_filename,
-                          frequent_users_thr = frequent_users_thr,
-                          cold_start_buckets = cold_start_buckets,
-                          use_data_unique_users = use_data_unique_users,
-                          to_grid_search = to_grid_search,
-                          num_factors = num_factors,
-                          num_iter = num_iter,
-                          learn_rate = learn_rate,
-                          regularization = regularization,
-                          random_seed = random_seed,
-                          model_print_name = 'ISGD')
+    images_path = 'images/'+dump_foldername+sample_foldername
+    output_path = 'output/'+dump_foldername+sample_foldername
+
+    heatmaps_path = images_path+'heatmaps/'
+
+    diversity_graphpath = images_path+'diversity_eval/'
+    diversity_filepath = output_path+'diversity_eval/'
+
+    validate_folderpath(images_path)
+    validate_folderpath(output_path)
+    validate_folderpath(heatmaps_path)
+    validate_folderpath(diversity_graphpath)
+    validate_folderpath(diversity_filepath)
+
+    return images_path, output_path, heatmaps_path, diversity_graphpath, diversity_filepath
+
+
+def validate_folderpath(folderpath):
+    if not os.path.exists(folderpath):
+        os.makedirs(folderpath)
+        print(folderpath)
+
+
+# def get_namepaths_Palco2010_ISGD(sample_year_month,
+#                                         interval_type,
+#                                         dump_filename,
+#                                         use_data_unique_users,
+#                                         frequent_users_thr,
+#                                         cold_start_buckets,
+#                                         to_grid_search,
+#                                         num_factors,
+#                                         num_iter,
+#                                         learn_rate,
+#                                         regularization,
+#                                         random_seed):
+    
+#     return get_namepaths(data_name = '_palco2010',
+#                           data_print_name = 'Palco2010',
+#                           sample_year_month = sample_year_month,
+#                           interval_type = interval_type,
+#                           dump_filename = dump_filename,
+#                           frequent_users_thr = frequent_users_thr,
+#                           cold_start_buckets = cold_start_buckets,
+#                           use_data_unique_users = use_data_unique_users,
+#                           to_grid_search = to_grid_search,
+#                           num_factors = num_factors,
+#                           num_iter = num_iter,
+#                           learn_rate = learn_rate,
+#                           regularization = regularization,
+#                           random_seed = random_seed,
+#                           model_print_name = 'ISGD')
 
 
 def get_namepaths(data_name:str,
