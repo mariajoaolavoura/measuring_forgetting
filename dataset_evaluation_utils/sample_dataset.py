@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -46,13 +46,14 @@ def filter_out_users_with_less_than_k_rates_per_period(df, user_col='user_id', k
 
 def split_timestamp(df, time_col='timestamp'):
     '''
-        df: pandas DataFrame, requires a timestamp column
+        df: pandas DataFrame, requires a timestamp (dtype:int) column
 
         returns a new dataframe with year-month, year, month and day columns
     '''
     data = df.copy()
 
-    data['date'] = data[time_col].apply(lambda x: datetime.utcfromtimestamp(x)) # convert unix timestamp to date
+    # data['date'] = data[time_col].apply(lambda x: datetime.utcfromtimestamp(x)) # convert unix timestamp to date
+    data['date'] = data[time_col].apply(lambda x: datetime.fromtimestamp(x, tz=timezone.utc))
     data = data.sort_values(by='date') # sort by date
     data['year-month'] = data['date'].apply(lambda x: datetime.strptime( str(x.year)+'-'+str(x.month), '%Y-%m' ))
     data['year'] = data['date'].dt.year
@@ -64,11 +65,11 @@ def split_timestamp(df, time_col='timestamp'):
 
 def sample_time_period(time_period, df, col='user_id', time_col='year-month', period='month'):
     '''
-        time_period: list of tupples, start and end time with the respective time format compatible with the time_col refered
+        time_period: list of tupples, start and end times with the respective time format compatible with the time_col refered
                      for example [('2013-01', '%Y-%m'), ('2017-01', '%Y-%m')]
                      or ['2013-01', '2017-01']
 
-        df: pandas DataFrame, requires a time column      
+        df: pandas DataFrame, requires a time column in the '%Y-%m' format      
 
         col: str, 'user_id' or 'item_id'
         
