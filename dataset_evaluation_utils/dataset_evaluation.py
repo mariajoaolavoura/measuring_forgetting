@@ -128,6 +128,36 @@ def get_interactions_info(data, user_col, quarter_info=False, semester_info=Fals
     
     else:
         return user_presence_df, user_month_interactions
+    
+def get_semester_info_with_user_thresh(print_timeperiod:str, usi:pd.DataFrame, semesters_idx:list, n_semester_thr:int):
+    '''
+        Prints the number of users with activity in at least *n_semester_thr* semesters, for the period given
+        Prints the number of interactions per semester (to check if the distribution of interactions per bucket and if it's higher than 10k)
+        
+        print_timeperiod: str
+        usi: pd.DataFrame, user semester interactions , output from get_interactions_info()
+        semesters_idx: list, list of the columns names of usi frame
+        n_semester_thr: int, user threshold is 1 interaction in at least *n_semester_thr* semesters
+
+        returns sample of the user semester interactions frame inputed
+    '''
+
+    usi_sample = usi.loc[:,semesters_idx]
+
+    # semester-frequent-users, presence in all semesters
+    sfu_filter = (usi_sample>0).T.sum() >= n_semester_thr
+    # in doubt? run:
+    #         print((pd.Series([1, 1, 0])>0))
+    #         print(pd.Series([True, True, False]).sum())
+    #         print((pd.Series([1, 1, 0])>0).sum())
+    #         print((pd.Series([1, 1, 0])>0).sum()>=2)
+
+    fusi_sample = usi_sample[sfu_filter]
+
+    print(str(fusi_sample.shape[0])+' users of '+str(usi_sample.shape[0])+' ('+str((fusi_sample.shape[0]/ usi_sample.shape[0])*100)+'%) are in '+str((n_semester_thr/fusi_sample.shape[1])*100)+'% or more semesters in '+str(print_timeperiod)+' ('+str(fusi_sample.sum().sum())+' interactions)')
+    print('\nNumber of interactions per semester in '+str(print_timeperiod)+':\n',fusi_sample.sum())
+
+    return fusi_sample
 
 def plot_interactions_per_month(data, dataset_name):
     '''

@@ -116,6 +116,7 @@ def getBucketsHoldouts(data:pd.DataFrame, user_col:str, item_col:str, frequent_u
     #   remove these interactions from the holdout
 
     for i, _ in enumerate(holdouts): 
+        # print(buckets)
         buckets_df = pd.concat( buckets )[[user_col, item_col]].set_index([user_col, item_col]) # concatenate all holdouts and set interaction tuple as index.
         temp_h = holdouts[i].set_index([user_col, item_col])
         common_interactions = temp_h.join(buckets_df, how='inner').index

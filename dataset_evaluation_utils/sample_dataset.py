@@ -86,8 +86,7 @@ def sample_time_period(time_period, df, col='user_id', time_col='year-month', pe
         return None
 
     # time_period shape of ['2013-01', '2017-01']
-    if len(time_period[0]) != 2:
-        
+    if len(time_period[0]) != 2: # len of string '2013-01' vs len of tupple ('2013-01', '%Y-%m'), if tupple len=2
         time_period_start = time_period[0]
         time_period_end = time_period[1]
 
