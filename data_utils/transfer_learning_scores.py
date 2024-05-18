@@ -38,6 +38,21 @@ def compute_FWT_rodrigues(results_matrix): # Díaz-Rodriguez et al. 2018
     return np.mean(upper_tri)
 
 
+def compute_symmetric_BWT_rodrigues(results_matrix): # Díaz-Rodriguez et al. 2018
+    diff = []
+    n_checkpoints = results_matrix.shape[0]
+    for i in range(0, n_checkpoints-1): # 1 means holdout 2, 2 means 3, so on
+        for j in range(i+1, n_checkpoints):
+            Rij = results_matrix.iloc[i,j] # get models performances' on previous holdouts
+            Rjj = results_matrix.iloc[j,j] # get models performances' on their closest holdouts (diagonal)
+            # print(Rij, Rjj)
+            diff.append( Rij - Rjj ) # future models performances' - performances' of models closest to holdouts (diagonal)
+            # print(diff)
+    BWT_symmetric = sum(diff) / ( n_checkpoints*(n_checkpoints-1) / 2 ) # store average BWT for model
+    return BWT_symmetric, diff # return BWT and average BWT for all models
+
+
+
 def grid_search(model, stream, random_seed = 10, interleaved=10):    
     num_factors = [50, 100, 150, 200]
     num_iter = [1, 2, 5, 8]
