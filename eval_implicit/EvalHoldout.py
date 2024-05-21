@@ -113,7 +113,7 @@ class EvalHoldout:
             results['time_recommend'].append(end_recommend - start_recommend)
             
             # this is the difference
-            rec_lists += [reclist]
+            rec_lists += [reclist] # it's outside of the if-case to avoid insconsistent sizes of lists 
 
             # EvalPoint
             if len(reclist): # if user has been seen by model, add result
