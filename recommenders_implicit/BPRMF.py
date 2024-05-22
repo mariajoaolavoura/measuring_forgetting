@@ -53,7 +53,10 @@ class BPRMF(Model):
             np.random.shuffle(idx)
             for i in idx:
                 user_id, item_id = self.data.GetTuple(i, True)
-                self._UpdateFactors(user_id, item_id)
+                user_items = self.data.GetUserItems(user_id)
+                unobserved = np.setdiff1d(np.arange(self.data.maxitemid + 1), user_items)
+                negative_item_id = int(np.random.choice(unobserved))
+                self._UpdateFactors(user_id, item_id, negative_item_id)
 
     def IncrTrain(self, user, item, update_users: bool = True, update_items: bool = True, n_times: int = 1):
         """
