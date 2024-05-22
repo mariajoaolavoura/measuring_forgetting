@@ -6,3 +6,4 @@ from .BISGD import BISGD
 from .UBISGD import UBISGD
 from .LocalUBISGD import LocalUBISGD
 from .UserKNN import UserKNN
+from .BPRMF import BPRMF
