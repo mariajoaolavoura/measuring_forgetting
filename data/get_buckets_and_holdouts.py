@@ -76,13 +76,19 @@ def getBucketsHoldouts(data:pd.DataFrame, user_col:str, item_col:str, frequent_u
             last_interaction_idx = []
             for u in frequent_users:
                 idx = b[user_col] == u
+                # print('idx.sum()', idx.sum(), end=',')
                 if (idx.sum() == 1) and (u not in frequent_users_seen): # first condition to see if user appears once, second to see if user was not seen before - then it wont go to holdout, and it will be marked as seen
                     frequent_users_seen.append(u)
+                    # print('1 inter user', end=',')
                     continue
                 elif idx.sum() > 0: # else, if user appears at least once, append index to holdout
+                    # print('0+ inter user', end=',')
+                    # print(b[ idx ].index[-1], end=',')
+
                     last_interaction_idx.append( b[ idx ].index[-1] )
                     if (u not in frequent_users_seen): # and if user hasnt been seen, mark as seen (he must appear at least twice then)
                         frequent_users_seen.append(u)
+            # print('last inter idx len =', len(last_interaction_idx))
             holdout = b.loc[ last_interaction_idx ] # get last interactions as holdout
             holdout.reset_index(drop=True, inplace=True) # reset index required - implicitdata indexes user by their previous index
             holdouts.append(holdout) # append to holdouts
